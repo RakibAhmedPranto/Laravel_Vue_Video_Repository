@@ -4,46 +4,35 @@ namespace App\Http\Controllers;
 
 use App\Channel;
 use Illuminate\Http\Request;
+use Image;
+use File;
+use App\Http\Requests\Channels\UpdateChannelRequest;
 
 class ChannelController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
+    public function __construct()
+    {
+        $this->middleware(['auth'])->only('update');
+    }
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
+
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Channel  $channel
-     * @return \Illuminate\Http\Response
-     */
+
     public function show(Channel $channel)
     {
         if (view()->exists('channels.show'))
@@ -53,44 +42,45 @@ class ChannelController extends Controller
         abort(404);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Channel  $channel
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit(Channel $channel)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Channel  $channel
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Channel $channel)
+
+    public function update(UpdateChannelRequest $request, Channel $channel)
     {
+        // echo '<pre>';
+        // print_r($channel->toArray());
+        // exit;
         if ($request->hasFile('image')) {
-
+            $ext = $request->image->getClientOriginalExtension();
+            $name = time().".".$ext;
+            $upload_path = 'backend/channel/';
+            $img = Image::make($request->image)->resize(100,100);
+            $image_url = $upload_path.$name;
+            $img->save($image_url);
+            if(File::exists($channel->image))
+            {
+                unlink($channel->image);
+            }
+            $channel->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'image' => $image_url,
+            ]);
         }
-
-        $channel->update([
-            'name' => $request->name,
-            'description' => $request->description
-        ]);
-
+        else{
+            $channel->update([
+                'name' => $request->name,
+                'description' => $request->description
+            ]);
+        }
         return redirect()->back();
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Channel  $channel
-     * @return \Illuminate\Http\Response
-     */
+
     public function destroy(Channel $channel)
     {
         //

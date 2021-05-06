@@ -49802,6 +49802,8 @@ module.exports = function(module) {
 __webpack_require__(/*! ./bootstrap */ "./resources/js/bootstrap.js");
 
 window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.js");
+
+__webpack_require__(/*! ./components/subscribe-button */ "./resources/js/components/subscribe-button.js");
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
@@ -49811,6 +49813,7 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
  */
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
+
 
 Vue.component('example-component', __webpack_require__(/*! ./components/ExampleComponent.vue */ "./resources/js/components/ExampleComponent.vue")["default"]);
 /**
@@ -49936,6 +49939,53 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony reexport (safe) */ __webpack_require__.d(__webpack_exports__, "staticRenderFns", function() { return _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_ExampleComponent_vue_vue_type_template_id_299e239e___WEBPACK_IMPORTED_MODULE_0__["staticRenderFns"]; });
 
 
+
+/***/ }),
+
+/***/ "./resources/js/components/subscribe-button.js":
+/*!*****************************************************!*\
+  !*** ./resources/js/components/subscribe-button.js ***!
+  \*****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+Vue.component('subscribe-button', {
+  props: {
+    channel: {
+      type: Object,
+      required: true,
+      "default": function _default() {
+        return {};
+      }
+    },
+    subscriptions: {
+      type: Array,
+      required: true,
+      "default": function _default() {
+        return [];
+      }
+    }
+  },
+  computed: {
+    subscribed: function subscribed() {
+      if (!__auth() || this.channel.user_id === __auth().id) return false;
+      return !!this.subscriptions.find(function (subscription) {
+        return subscription.user_id === __auth().id;
+      });
+    },
+    owner: function owner() {
+      if (__auth() && this.channel.user_id === __auth().id) return true;
+      return false;
+    }
+  },
+  methods: {
+    toggleSubscription: function toggleSubscription() {
+      if (!__auth()) {
+        alert('Please Login to Subscribe');
+      }
+    }
+  }
+});
 
 /***/ }),
 
